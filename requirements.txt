@@ -76,7 +76,7 @@ pyxdg==0.25
 PyYAML==3.12
 reportbug==7.1.7
 reportlab==3.3.0
-requests==2.12.4
+requests==2.20.0
 roman==2.0.0
 scipy==0.18.1
 SecretStorage==2.3.1

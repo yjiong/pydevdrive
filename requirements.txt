@@ -46,7 +46,7 @@ numpy==1.12.1
 paramiko==2.0.0
 passlib==1.7.0.post20170423015548
 pexpect==4.2.1
-Pillow==4.0.0
+Pillow==6.2.0
 protobuf==3.10.0
 psycopg2==2.7.5
 ptyprocess==0.5.1

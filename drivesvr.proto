@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package device;
+
+service Drive {
+    rpc DriveSvr(DriveSvrRequest) returns (DriveSvrResponse) {
+    }
+}
+
+
+message DriveSvrRequest{
+    string Devid=1;
+    uint32 Cmd=2;
+    string CmdStr=3;
+    bytes Data=4;
+}
+
+message DriveSvrResponse{
+    bytes Data=1;
+}
+
+

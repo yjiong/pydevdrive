@@ -75,7 +75,8 @@ class ModbusRtuExample(base.DevObj):
         if rw == "r":
             try:
                 # 缺省参数的时候
-                if 'StartingAddress' not in var_value\
+                if not var_value or \
+                        'StartingAddress' not in var_value\
                         or 'Quantity' not in var_value:
                     var_value = {'StartingAddress': 0,
                                  'Quantity': 10}
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     # 定义读的参数
     rd = {'StartingAddress': 0,
           'Quantity': 10}
-    print(mydev.rw_dev("r", rd))
+    print(mydev.rw_dev("r", None))
     # 定义要写的参数
     wd = {'StartingAddress': 0,
           'Quantity': 2,

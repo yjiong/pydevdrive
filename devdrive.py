@@ -66,13 +66,16 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
 
     def DriveSvr(self, request, context):
         self._info("request.Devid: %s" % request.Devid)
-        self._info("request.Cmd: %s" % self.handlers[request.Cmd].__name__)
+        self._info("request.Cmd: %s" % self.handlers[request.Cmd])
         self._info("request.CmdStr: %s" % request.CmdStr)
         self._info("request.Data: %s" % request.Data)
         try:
             reqs = request.Data if base._PYVER == "2" else\
                 bytes.decode(request.Data)
-            rdata = json.loads(reqs)
+            try:
+                rdata = json.loads(reqs)
+            except Exception:
+                rdata = None
             self.handlers[request.Cmd](devid=request.Devid,
                                        rw=request.CmdStr,
                                        vv=rdata)

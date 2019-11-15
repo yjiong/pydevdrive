@@ -66,7 +66,8 @@ class ModbusTCPExample(base.DevObj):
         if rw == "r":
             try:
                 # 缺省参数的时候
-                if 'StartingAddress' not in var_value\
+                if not var_value or\
+                        'StartingAddress' not in var_value\
                         or 'Quantity' not in var_value:
                     var_value = {'StartingAddress': 0,
                                  'Quantity': 10}

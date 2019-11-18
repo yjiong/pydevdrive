@@ -18,7 +18,7 @@ except Exception as e:
 class ModbusTCPExample(base.DevObj):
     def __init__(self, element):
         self.addr = element[base.DevAddr]
-        self.commif = base.getCommif(element)
+        self.getCommif(element)
 # -----------------------------user code-----------------------------------
 #         定义自己的属性等
 #         self.var1 = xxx
@@ -79,7 +79,7 @@ class ModbusTCPExample(base.DevObj):
                 self._debug(r'the device value is %r' % value)
             except Exception as e:
                 self._debug(e)
-                value.update({'error': e})
+                value.update({'error': str(e)})
         else:
             try:
                 md = m.execute(int(self.addr),

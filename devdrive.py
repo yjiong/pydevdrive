@@ -3,7 +3,7 @@
 """
 # Author: yjiong
 # Created Time : 2019-10-18 14:18:41
-
+# Mail: 4418229@qq.com
 # File Name: devdrive.py
 # Description:
 
@@ -66,7 +66,7 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
 
     def DriveSvr(self, request, context):
         self._info("request.Devid: %s" % request.Devid)
-        self._info("request.Cmd: %s" % self.handlers[request.Cmd])
+        self._info("request.Cmd: %s" % self.handlers[request.Cmd].__name__)
         self._info("request.CmdStr: %s" % request.CmdStr)
         self._info("request.Data: %s" % request.Data)
         try:

@@ -18,7 +18,7 @@ except Exception as e:
 class ModbusRtuExample(base.DevObj):
     def __init__(self, element):
         self.addr = element[base.DevAddr]
-        self.commif = base.getCommif(element)
+        self.getCommif(element)
         self.set_serial_config()
 # -----------------------------user code-----------------------------------
 #         定义自己的属性等
@@ -88,7 +88,7 @@ class ModbusRtuExample(base.DevObj):
                 self._debug(r'the device value is %r' % value)
             except Exception as e:
                 self._debug(e)
-                value.update({'error': e})
+                value.update({'error': str(e)})
         else:
             try:
                 md = m.execute(int(self.addr),

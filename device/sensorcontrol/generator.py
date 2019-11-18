@@ -27,7 +27,7 @@ except Exception as e:
 class DeviceName(base.DevObj):
     def __init__(self, element):
         self.addr = element[base.DevAddr]
-        self.commif = base.getCommif(element)
+        self.getCommif(element)
 
 # -----------------------------user code-----------------------------------
         # 如果是串口类接口,初始化串口

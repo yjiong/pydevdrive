@@ -155,7 +155,7 @@ class DevObj(object):
     def rw_dev(self, rw='r', var_value=None):
         ser = 0
         try:
-            if re.search('(/dev.+)|(COM\d+)|(com\d+)', self.commif):
+            if re.search(r'(/dev.+)|(COM\d+)|(com\d+)', self.commif):
                 if self.commif not in DynApp.serstat:
                     DynApp.serstat[self.commif] = 0
                 count = 0
@@ -189,7 +189,7 @@ class DevObj(object):
 
     @property
     def dev_commif(self):
-        return self.commif
+        return self.syscommif
 
     def dev_element(self):
         self.element = {DevAddr: self.addr,
@@ -201,10 +201,8 @@ class DevObj(object):
     def rw_device(self, rw=None, var_value=None):
         return {"error": u"设备驱动程序未定义rw_device方法"}
 
-
-def getCommif(ele):
-    if ele[Commif] in DynApp.syscommif:
-        connstr = DynApp.syscommif[ele[Commif]]
-    else:
-        connstr = ele[Commif]
-    return connstr
+    def getCommif(self, ele):
+        self.commif = ele[Commif]
+        self.syscommif = ele[Commif]
+        if self.commif in DynApp.syscommif:
+            self.commif = DynApp.syscommif[self.commif]

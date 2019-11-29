@@ -148,7 +148,7 @@ class DevObj(object):
             DynApp.serstat[serialPort] = 1
         except Exception as e:
             DynApp.serstat[serialPort] = 0
-            # print("%s open failed %s" % (serialPort, e))
+            print("%s open failed %s" % (serialPort, e))
             return 0
         return ser
 
@@ -174,9 +174,9 @@ class DevObj(object):
             if len(value) == 0:
                 raise ValueError("value len is zero")
         except Exception as e:
-            value = {'error': e}
-            time.sleep(0.2)
             self._error(e)
+            self._debug(traceback.format_exc())
+            value = {'error': e.message}
         if ser != 0:
             if ser.isOpen():
                 ser.close()

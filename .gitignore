@@ -3,6 +3,9 @@ Vagrantfile
 *.log
 *.pyc
 *.doc
+des.c
+des.h
+*.so
 __pycache__/
 dev_client.py
 debpackage/opt/*

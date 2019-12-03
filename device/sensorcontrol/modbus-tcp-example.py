@@ -6,12 +6,13 @@ import modbus_tk.defines as cst
 import modbus_tk.modbus_tcp as modbus_tcp
 import logging
 import os
-sys.path.append('../')
+
 try:
     import base
-except Exception as e:
-    print(e.message)
-    os._exit(255)
+except Exception:
+    tp = (os.path.split(os.path.realpath(__file__))[0])
+    sys.path.append(os.path.dirname(tp))
+    import base
 
 
 @base.DynApp.registerdev(base.DynApp, 'ModbusTCPExample')

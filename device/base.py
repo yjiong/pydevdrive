@@ -3,7 +3,7 @@
 """
 # Author: yjiong
 # Created Time : 2019-10-18 14:18:41
-
+# Mail: 4418229@qq.com
 # File Name: base.py
 # Description:
 
@@ -176,7 +176,7 @@ class DevObj(object):
         except Exception as e:
             self._error(e)
             self._debug(traceback.format_exc())
-            value = {'error': e.message}
+            value = {'error': str(e)}
         if ser != 0:
             if ser.isOpen():
                 ser.close()

@@ -24,8 +24,9 @@ sys.path.append(sys.path[0] + "/device")
 try:
     import base
 except Exception:
-    traceback.format_exc()
-    os._exit(255)
+    tp = (os.path.split(os.path.realpath(__file__))[0])
+    sys.path.append(os.path.dirname(tp))
+    import base
 
 
 class DevDriveService(drivesvr_pb2_grpc.DriveServicer,

@@ -4,7 +4,7 @@
 # Author: yjiong
 # Created Time : 2019-11-25 13:16:10
 # Mail: 4418229@qq.com
-# File Name: DLT645_07.py
+# File Name: yada_des.py
 # Description:
 
 """
@@ -15,7 +15,7 @@ sys.path.append('./')
 LL = ctypes.cdll.LoadLibrary
 
 
-def yada_des(ibs, kbs):
+def yada_des(ibs, kbs, ende="en"):
     c_ubyte_array = ctypes.c_ubyte * 8
     ib = c_ubyte_array()
     kb = c_ubyte_array()
@@ -37,7 +37,10 @@ def yada_des(ibs, kbs):
                     lib = LL("./arm64des.so")
                 else:
                     lib = LL("./armdes.so")
-        lib.f_des_encrypt(bib, bkb, bob)
+        if ende == "en":
+            lib.f_des_encrypt(bib, bkb, bob)
+        else:
+            lib.f_des_decrypt(bib, bkb, bob)
     except Exception as e:
         print(str(e))
     return [x for x in ob]
@@ -46,5 +49,11 @@ def yada_des(ibs, kbs):
 if __name__ == '__main__':
     inb = [1, 1, 1, 1, 1, 1, 1, 1]
     ink = [1, 1, 1, 1, 1, 1, 1, 1]
+    # 加密
     print(yada_des(inb, ink))
-    # [153, 77, 77, 193, 87, 185, 108, 82]
+    # 结果为:[153, 77, 77, 193, 87, 185, 108, 82]
+    inb = [153, 77, 77, 193, 87, 185, 108, 82]
+    ink = [1, 1, 1, 1, 1, 1, 1, 1]
+    # 解密
+    print(yada_des(inb, ink, "de"))
+    # 结果为:[1, 1, 1, 1, 1, 1, 1, 1]

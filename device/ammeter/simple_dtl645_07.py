@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import dlt645_07
+import time
 
 try:
     import base
@@ -25,16 +26,18 @@ except Exception:
 
 @base.DynApp.registerdev(base.DynApp, 'SimpleDTL645_07')
 class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
-    def __init__(self, element):
-        super(SimpleDTL645_07, self).__init__(address=element[base.DevAddr])
+    def __init__(self, element, passwd="", clientcode=""):
+        super(SimpleDTL645_07, self).__init__(element[base.DevAddr],
+                                              passwd,
+                                              clientcode)
         self.getCommif(element)
         self.set_serial_config()
         # self.read_di = [(0x0, 0x08, 0xFF, 0x01)]
         # self.read_di = [0x0001ff00]
-        # self.read_di = ['04000503']
+        self.read_di = ['04000503']
         # self.read_di = ['04000407']
         # self.read_di = ['04000102']
-        self.read_di = ['04000703']
+        # self.read_di = ['04000703']
         # self.read_di = ['040005ff']
         # self.read_di = ['0500ff01']
         # self.read_di = ['500ff01']
@@ -74,43 +77,59 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
 
     def rw_device(self, rw="r", var_value=None):
         value = {}
-        # send_data = self.get_meter_address_pdu()
-        # send_data = self.broadcast_time_pdu()
-        # send_data = self.set_comrate(2400)
-        # self._debug("send date = %r" % [hex(x) for x in send_data])
-        # self.serial.write(send_data)
-        # time.sleep(0.5)
-        # rece_data = []
-        # while True:
-            # va = self.serial.read(1)
-            # if len(va) == 0:
-                # break
-            # intva = ord(va)
-            # rece_data.append(intva)
-        # if len(rece_data) == 0:
-            # raise Exception("timeout")
-        # self._debug("rece date = %r" % [hex(x) for x in rece_data])
-        # resp = self.analysis(rece_data)
-        # value.update(resp)
-
-        for di in self.read_di:
-            while True:
-                send_data = self.create_cmd_pdu(di)
-                self._debug("send date = %r" % [hex(x) for x in send_data])
-                self.serial.write(send_data)
-                rece_data = []
+        if rw == "r":
+            for di in self.read_di:
                 while True:
-                    va = self.serial.read(1)
-                    if len(va) == 0:
+                    send_data = self.create_cmd_pdu(di)
+                    self._debug("send date = %r" % [hex(x) for x in send_data])
+                    self.serial.write(send_data)
+                    rece_data = []
+                    while True:
+                        va = self.serial.read(1)
+                        if len(va) == 0:
+                            break
+                        intva = ord(va)
+                        rece_data.append(intva)
+                    if len(rece_data) == 0:
+                        raise Exception("timeout")
+                    self._debug("rece date = %r" % [hex(x) for x in rece_data])
+                    resp = self.analysis(rece_data)
+                    if resp != dlt645_07.ReadFollowData:
                         break
-                    intva = ord(va)
-                    rece_data.append(intva)
-                if len(rece_data) == 0:
-                    raise Exception("timeout")
-                self._debug("rece date = %r" % [hex(x) for x in rece_data])
-                resp = self.analysis(rece_data)
-                if resp != dlt645_07.ReadFollowData:
+                value.update(resp)
+        else:
+            # 读地址
+            # send_data = self.get_meter_address_pdu
+            # 广播校时, 本指令无应答, timeout
+            # send_data = self.broadcast_time_pdu
+            # 设置波特率
+            # send_data = self.set_comrate(2400)
+            # 跳闸
+            # send_data = self.switch_off_pdu
+            # 合闸允许
+            # send_data = self.switch_on_pdu
+            # 报警
+            # send_data = self.warning_enable_pdu
+            # 报警解除
+            # send_data = self.warning_disable_pdu
+            # 保电
+            # send_data = self.keep_power_pdu
+            # 保电解除
+            # send_data = self.keep_power_release_pdu
+            self._debug("send date = %r" % [hex(x) for x in send_data])
+            self.serial.write(send_data)
+            time.sleep(0.5)
+            rece_data = []
+            while True:
+                va = self.serial.read(1)
+                if len(va) == 0:
                     break
+                intva = ord(va)
+                rece_data.append(intva)
+            if len(rece_data) == 0:
+                raise Exception("timeout")
+            self._debug("rece date = %r" % [hex(x) for x in rece_data])
+            resp = self.analysis(rece_data)
             value.update(resp)
         return value
 
@@ -119,12 +138,9 @@ if __name__ == '__main__':
     ele = {
             # base.DevAddr: "171009240037",
             base.DevAddr: "180510200012",
-            # base.DevAddr: "418874000265",
-            # base.DevAddr: "9",
-            base.Commif: '/dev/ttyUSB0'
+            base.Commif: '/dev/ttyUSB0',
             }
-    mydev = SimpleDTL645_07(ele)
+    mydev = SimpleDTL645_07(ele, passwd="00000000", clientcode="00000000")
     mydev._logger.setLevel(logging.DEBUG)
-    v = (mydev.rw_dev("r", None))
-    # print(json.dumps(v, encoding='utf8', ensure_ascii=False))
+    v = (mydev.rw_dev("w", None))
     print(json.dumps(v, ensure_ascii=False))

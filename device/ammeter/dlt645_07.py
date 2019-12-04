@@ -8,10 +8,8 @@
 # Description:
 
 """
-import sys
 import time
 from dlt645di import *  # pass # NOQA
-sys.path.append('./')
 
 
 def h2bcd(hexv):
@@ -246,12 +244,8 @@ class DLT6452007_base(object):
         buf = [0xFE]
         buf.append(0xFE)
         buf.append(0x68)
-        buf.append(int(amm_addr[10:12]) // 10 * 16 + int(amm_addr[10:12]) % 10)
-        buf.append(int(amm_addr[8:10]) // 10 * 16 + int(amm_addr[8:10]) % 10)
-        buf.append(int(amm_addr[6:8]) // 10 * 16 + int(amm_addr[6:8]) % 10)
-        buf.append(int(amm_addr[4:6]) // 10 * 16 + int(amm_addr[4:6]) % 10)
-        buf.append(int(amm_addr[2:4]) // 10 * 16 + int(amm_addr[2:4]) % 10)
-        buf.append(int(amm_addr[0:2]) // 10 * 16 + int(amm_addr[0:2]) % 10)
+        for i in range(12, 0, -2):
+            buf.append(int(amm_addr[(i-2):i], base=16))
         buf.append(0x68)
         return buf
 
@@ -262,7 +256,7 @@ class DLT6452007_base(object):
         if len(value) > 0:
             assert dt.write_ctrcode, ("read only for di:%s" % di)
             pdu.append(dt.Write_ctrcode)
-            if dt.write_ctrcode == 0x03: # pass  # NOQA
+            if dt.write_ctrcode == SafetyOperate: # pass  # NOQA
                 length = len(dt.di)+len(self.passwd)+len(self.cli_code)+len(value)
         else:
             assert dt.read_ctrcode, ("write only for di:%s" % di)
@@ -389,18 +383,22 @@ class DLT6452007_base(object):
             return ReadFollowData # pass  # NOQA
         if ctb == (ReadAddr | 0x80): # pass  # NOQA
             return {"meter-address": str(h2bcd(self._sub33(val_bs)))}
-        if ctb == (ChangeComRate | 0x80): # pass  # NOQA
+        if ctb == (ChangeComRate | 0x87): # pass  # NOQA
             return {"ChangeComRate": "ok"}
+        if ctb == (ControlOperate | 0x8C): # pass  # NOQA
+            return {"ControlOperate": "ok"}
         self._debug("self._rece_buf:")
         self._debug([hex(x) for x in self._rece_buf])
         self._rece_buf[:] = []
         self._seq = 0
         return ret
 
+    @property
     def get_meter_address_pdu(self):
         return [0xFE, 0xFE, 0xFE, 0xFE, 0x68, 0xAA, 0xAA, 0xAA,
                 0xAA, 0xAA, 0xAA, 0x68, ReadAddr, 0, 0xDF, 0x16] # pass  # NOQA
 
+    @property
     def broadcast_time_pdu(self):
         pdu = [0xFE, 0xFE, 0xFE, 0xFE, 0x68, 0x99, 0x99, 0x99,
                0x99, 0x99, 0x99, 0x68, BroadcastTime, 0x06] # pass  # NOQA
@@ -424,14 +422,51 @@ class DLT6452007_base(object):
                     0x16])
         return pdu
 
-    def switch_on(self):
-        lenght = len(self.passwd) + len(self.clientcode)
+    def _strd2hlist(self, strd):
+        ls = []
+        for i in range(0, len(strd), 2):
+            ls.append(int(strd[i:i+2], base=16))
+        return ls
+
+    def _control_operate_pdu(self, ctrbyte):
+        pc = "%08d%08d" % (int(self.passwd), int(self.cli_code))
+        pcl = self._strd2hlist(pc)
+        ts = time.strftime("%y%m%d235959", time.localtime())
+        tsl = self._strd2hlist(ts)
+        lenght = len(pcl) + len(tsl) + 2
         pdu = self._get_pdu_head()
         pdu.extend([ControlOperate, # pass  # NOQA
-                    lenght,
-                    chsum(pdu[pdu.index(0x68):]),
-                    0x16])
+                    lenght])
+        pdu.extend(self._plus33(pcl))
+        pdu.extend(self._plus33([0, ctrbyte]))
+        pdu.extend(self._plus33(tsl))
+        pdu.extend([chsum(pdu[pdu.index(0x68):]), 0x16])
         return pdu
+
+    # 1AH跳闸,1BH合闸允许,2AH报警,2BH报警解除,3AH保电,3BH保电解除
+    @property
+    def switch_off_pdu(self):
+        return self._control_operate_pdu(0x1A)
+
+    @property
+    def switch_on_pdu(self):
+        return self._control_operate_pdu(0x1B)
+
+    @property
+    def warning_enable_pdu(self):
+        return self._control_operate_pdu(0x2A)
+
+    @property
+    def warning_disable_pdu(self):
+        return self._control_operate_pdu(0x2B)
+
+    @property
+    def keep_power_pdu(self):
+        return self._control_operate_pdu(0x3A)
+
+    @property
+    def keep_power_release_pdu(self):
+        return self._control_operate_pdu(0x3B)
 
 
 class DLT645_07_Expection_err(Exception):

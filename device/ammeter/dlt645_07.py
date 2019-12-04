@@ -256,7 +256,7 @@ class DLT6452007_base(object):
         if len(value) > 0:
             assert dt.write_ctrcode, ("read only for di:%s" % di)
             pdu.append(dt.Write_ctrcode)
-            if dt.write_ctrcode == SafetyOperate: # pass  # NOQA
+            if dt.write_ctrcode == WriteData: # pass  # NOQA
                 length = len(dt.di)+len(self.passwd)+len(self.cli_code)+len(value)
         else:
             assert dt.read_ctrcode, ("write only for di:%s" % di)
@@ -271,6 +271,9 @@ class DLT6452007_base(object):
         pdu.append(length)
         pdu.extend(di_seq)
         if len(value) > 0:
+            pc = "%08d%08d" % (int(self.passwd), int(self.cli_code))
+            pcl = self._strd2hlist(pc)
+            pdu.extend(self._plus33(pcl))
             pdu.extend(self._plus33(value))
         pdu.append(chsum(pdu[pdu.index(0x68):]))
         pdu.append(0x16)
@@ -383,9 +386,9 @@ class DLT6452007_base(object):
             return ReadFollowData # pass  # NOQA
         if ctb == (ReadAddr | 0x80): # pass  # NOQA
             return {"meter-address": str(h2bcd(self._sub33(val_bs)))}
-        if ctb == (ChangeComRate | 0x87): # pass  # NOQA
+        if ctb == (ChangeComRate | 0x80): # pass  # NOQA
             return {"ChangeComRate": "ok"}
-        if ctb == (ControlOperate | 0x8C): # pass  # NOQA
+        if ctb == (ControlOperate | 0x80): # pass  # NOQA
             return {"ControlOperate": "ok"}
         self._debug("self._rece_buf:")
         self._debug([hex(x) for x in self._rece_buf])
@@ -449,8 +452,12 @@ class DLT6452007_base(object):
         return self._control_operate_pdu(0x1A)
 
     @property
-    def switch_on_pdu(self):
+    def switch_on_enable_pdu(self):
         return self._control_operate_pdu(0x1B)
+
+    @property
+    def switch_on_pdu(self):
+        return self._control_operate_pdu(0x1C)
 
     @property
     def warning_enable_pdu(self):

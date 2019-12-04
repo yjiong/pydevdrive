@@ -34,13 +34,20 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
         self.set_serial_config()
         # self.read_di = [(0x0, 0x08, 0xFF, 0x01)]
         # self.read_di = [0x0001ff00]
-        self.read_di = ['04000503']
+        # 状态字3
+        # self.read_di = ['04000503']
         # self.read_di = ['04000407']
         # self.read_di = ['04000102']
         # self.read_di = ['04000703']
         # self.read_di = ['040005ff']
-        # self.read_di = ['0500ff01']
+        # ReadFollowData
         # self.read_di = ['500ff01']
+        # 剩余电量
+        # self.read_di = ['900101']
+        # self.read_di = ['03320101']
+        # 上1次购电后总购电次数
+        self.read_di = ['03320201']
+        self.read_di = ['1e000c']
 
     @classmethod
     def set_serial_config(cls):
@@ -106,8 +113,10 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
             # send_data = self.set_comrate(2400)
             # 跳闸
             # send_data = self.switch_off_pdu
-            # 合闸允许
+            # 合闸
             # send_data = self.switch_on_pdu
+            # 合闸允许
+            # send_data = self.switch_on_enable_pdu
             # 报警
             # send_data = self.warning_enable_pdu
             # 报警解除
@@ -115,7 +124,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
             # 保电
             # send_data = self.keep_power_pdu
             # 保电解除
-            # send_data = self.keep_power_release_pdu
+            send_data = self.keep_power_release_pdu
             self._debug("send date = %r" % [hex(x) for x in send_data])
             self.serial.write(send_data)
             time.sleep(0.5)
@@ -138,9 +147,10 @@ if __name__ == '__main__':
     ele = {
             # base.DevAddr: "171009240037",
             base.DevAddr: "180510200012",
+            # base.DevAddr: "9",
             base.Commif: '/dev/ttyUSB0',
             }
     mydev = SimpleDTL645_07(ele, passwd="00000000", clientcode="00000000")
     mydev._logger.setLevel(logging.DEBUG)
-    v = (mydev.rw_dev("w", None))
+    v = (mydev.rw_dev("r", None))
     print(json.dumps(v, ensure_ascii=False))

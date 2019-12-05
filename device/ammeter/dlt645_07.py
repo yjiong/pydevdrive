@@ -249,11 +249,11 @@ class DLT6452007_base(object):
         buf.append(0x68)
         return buf
 
-    def create_cmd_pdu(self, di, value=[]): # pass  # NOQA
+    def create_cmd_pdu(self, di, value=None): # pass  # NOQA
         dt = diType(di)
         pdu = self._get_pdu_head()
         length = len(dt.di)
-        if len(value) > 0:
+        if value:
             assert dt.write_ctrcode, ("read only for di:%s" % di)
             pdu.append(dt.Write_ctrcode)
             if dt.write_ctrcode == WriteData: # pass  # NOQA
@@ -270,7 +270,7 @@ class DLT6452007_base(object):
             di_seq.extend(self._plus33([self._seq]))
         pdu.append(length)
         pdu.extend(di_seq)
-        if len(value) > 0:
+        if value:
             pc = "%08d%08d" % (int(self.passwd), int(self.cli_code))
             pcl = self._strd2hlist(pc)
             pdu.extend(self._plus33(pcl))
@@ -322,6 +322,13 @@ class DLT6452007_base(object):
             # val = hexbcd2float([0x34,0x12,0x56,0x78], dtype.val_decimal_places)
         key = "%s(%s)" % (dtype.chinese_name, dtype.unit)
         ret = {key: val}
+        return ret
+
+    def _parse_safety_read_response(self, buf):
+        dtype = diType(self._sub33(buf[0:4]))
+        tval = self._sub33(buf[4:])
+        self._debug("the value part:%r" % [hex(x) for x in tval])
+        ret = {}
         return ret
 
     def _parse_write_response(self, buf):
@@ -390,6 +397,8 @@ class DLT6452007_base(object):
             return {"ChangeComRate": "ok"}
         if ctb == (ControlOperate | 0x80): # pass  # NOQA
             return {"ControlOperate": "ok"}
+        if ctb == (SafetyOperate | 0x80): # pass  # NOQA
+            return self._parse_safety_read_response(val_bs)
         self._debug("self._rece_buf:")
         self._debug([hex(x) for x in self._rece_buf])
         self._rece_buf[:] = []

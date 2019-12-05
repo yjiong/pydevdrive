@@ -8,10 +8,11 @@
 # Description:
 
 """
-import sys
 import ctypes
 import platform
-sys.path.append('./')
+import os
+
+tp = (os.path.split(os.path.realpath(__file__))[0])
 LL = ctypes.cdll.LoadLibrary
 
 
@@ -28,15 +29,15 @@ def yada_des(ibs, kbs, ende="en"):
     bob = ctypes.byref(ob)
     try:
         if platform.system() == 'Windows':
-            lib = LL(".\des.dll")
+            lib = LL("tp+\des.dll")
         else:
             if platform.uname()[4] == "x86_64":
-                lib = LL("./des.so")
+                lib = LL(tp+"/des.so")
             else:
                 if platform.uname()[4] == "aarch64":
-                    lib = LL("./arm64des.so")
+                    lib = LL(tp+"/arm64des.so")
                 else:
-                    lib = LL("./armdes.so")
+                    lib = LL(tp+"/armdes.so")
         if ende == "en":
             lib.f_des_encrypt(bib, bkb, bob)
         else:
@@ -47,6 +48,10 @@ def yada_des(ibs, kbs, ende="en"):
 
 
 if __name__ == '__main__':
+    if not os.path.exists(tp+"/des.so"):
+        print("file des.so not exists")
+        exit(255)
+
     inb = [1, 1, 1, 1, 1, 1, 1, 1]
     ink = [1, 1, 1, 1, 1, 1, 1, 1]
     # 加密

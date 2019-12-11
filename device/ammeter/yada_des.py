@@ -48,17 +48,30 @@ def yada_des(ibs, kbs, ende="en"):
 
 
 if __name__ == '__main__':
+    def sub33(buf):
+        rb = []
+        for i in range(len(buf)):
+            rb.append(0)
+        for i in range(len(buf)):
+            if buf[i] >= 0x33:
+                rb[i] = buf[i] - 0x33
+            else:
+                rb[i] = buf[i] + 0xCD
+        return rb
     if not os.path.exists(tp+"/des.so"):
         print("file des.so not exists")
         exit(255)
-
-    inb = [1, 1, 1, 1, 1, 1, 1, 1]
-    ink = [1, 1, 1, 1, 1, 1, 1, 1]
+    iii = [0x7B, 0xDD, 0xCB, 0x26, 0x86, 0xAC, 0xCF, 0x10,
+           0x55, 0x85, 0xB3, 0x5B, 0xA6, 0xAA, 0x79, 0x9B]
+    # inb = [1, 1, 1, 1, 1, 1, 1, 1]
+    # ink = [1, 1, 1, 1, 1, 1, 1, 1]
+    inb = sub33(iii)[:8]
+    ink = sub33(iii)[8:]
     # 加密
-    print(yada_des(inb, ink))
+    # print(yada_des(inb, ink))
     # 结果为:[153, 77, 77, 193, 87, 185, 108, 82]
-    inb = [153, 77, 77, 193, 87, 185, 108, 82]
-    ink = [1, 1, 1, 1, 1, 1, 1, 1]
+    # inb = [153, 77, 77, 193, 87, 185, 108, 82]
+    # ink = [1, 1, 1, 1, 1, 1, 1, 1]
     # 解密
-    print(yada_des(inb, ink, "de"))
+    print([hex(x) for x in yada_des(inb, ink, "de")])
     # 结果为:[1, 1, 1, 1, 1, 1, 1, 1]

@@ -89,6 +89,7 @@ class DynApp(object):
         self._dev_update()
 
     def _dev_update(self):
+        self.devlist = {}
         if os.path.exists(self.devlist_file):
             with codecs.open(self.devlist_file, encoding='utf-8') as f:
                 conf = configparser.ConfigParser()

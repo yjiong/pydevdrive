@@ -35,7 +35,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
         # self.read_di = [(0x0, 0x08, 0xFF, 0x01)]
         # self.read_di = [0x0001ff00]
         # 状态字3
-        # self.read_di = ['04000503']
+        self.read_di = ['04000503']
         # self.read_di = ['04000407']
         # self.read_di = ['04000102']
         # self.read_di = ['04000703']
@@ -48,7 +48,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
         # 上1次购电后总购电次数
         # self.read_di = ['03320201']
         # safe剩余电量
-        self.read_di = ['78102ff']
+        # self.read_di = ['78102ff']
 
     @classmethod
     def set_serial_config(cls):
@@ -104,6 +104,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
                     resp = self.analysis(rece_data)
                     if resp != dlt645_07.ReadFollowData:
                         break
+                time.sleep(0.5)
                 value.update(resp)
         else:
             # 读地址

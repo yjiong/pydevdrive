@@ -30,6 +30,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
         super(SimpleDTL645_07, self).__init__(element[base.DevAddr],
                                               passwd,
                                               clientcode)
+        self.addr = element[base.DevAddr]
         self.getCommif(element)
         self.set_serial_config()
         # self.read_di = [(0x0, 0x08, 0xFF, 0x01)]
@@ -104,7 +105,6 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
                     resp = self.analysis(rece_data)
                     if resp != dlt645_07.ReadFollowData:
                         break
-                time.sleep(0.5)
                 value.update(resp)
         else:
             # 读地址

@@ -127,20 +127,20 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
 
     def _dev_commif(self, **kw):
         if kw['devid'] not in self.devlist:
-            raise KeyError("device type %s not exist" % kw['devid'])
+            raise KeyError("device %s not exist" % kw['devid'])
         ustr = self.devlist[kw['devid']].dev_commif
         self.respstr = json.dumps(ustr)
 
     def _dev_element(self, **kw):
         print("in dev element")
         if kw['devid'] not in self.devlist:
-            raise KeyError("device type %s not exist" % kw['devid'])
+            raise KeyError("device %s not exist" % kw['devid'])
         self.respstr = json.dumps(
                 self.devlist[kw['devid']].dev_element())
 
     def _dev_getset(self, **kw):
         if kw['devid'] not in self.devlist:
-            raise KeyError("device type %s not exist" % kw['devid'])
+            raise KeyError("device %s not exist" % kw['devid'])
         rw = "r"
         vv = None
         if kw['rw'] != "":

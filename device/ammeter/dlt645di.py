@@ -16,6 +16,8 @@ ReadFollowData = 0x12
 ReadAddr = 0x13
 WriteData = 0x14
 WriteAddr = 0x15
+ReadOkData = 0x91
+WriteOkData = 0x94
 Frozen = 0x16
 ChangeComRate = 0x17
 ChangePasswd = 0x18
@@ -922,9 +924,14 @@ DI = {
       0x0500FF01: ((20, 2), (ReadData, None), ("kWh"), ("上1次定时冻结数据块")),
 
       # 预付费等有关di#######################################################
+      0x04000000: ((1, 0), (ReadData, WriteData), (""), ("状态")),
+      0x04000F01: ((4, 2), (ReadData, WriteData), ("kWh"), ("设置报警1限值")),
+      0x04000F02: ((4, 2), (ReadData, WriteData), ("kWh"), ("设置报警2限值")),
+      0x04000F03: ((4, 2), (ReadData, WriteData), ("kWh"), ("囤积电量限值")),
+      0x04000F04: ((4, 2), (ReadData, WriteData), ("kWh"), ("透支电量限值")),
       0x070101FF: ((16, 0), (None, WriteData), (""), ("开户")),
-      0x070102FF: ((16, 0), (None, WriteData), (""), ("购电")),
-      0x070103FF: ((16, 0), (None, WriteData), (""), ("退电")),
-      0x078102FF: ((16, 0), (SafetyOperate, None), (""), ("剩余电量")),
+      0x070102FF: ((16, 0), (ReadData, SafetyOperate), ("kWh"), ("售电")),
+      0x070103FF: ((16, 0), (ReadData, SafetyOperate), ("kWh"), ("退电")),
+      0x078102FF: ((16, 0), (ReadData, SafetyOperate), ("kWh"), ("剩余电量")),
 
        }

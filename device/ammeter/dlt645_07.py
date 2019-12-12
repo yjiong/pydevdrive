@@ -319,20 +319,26 @@ class DLT6452007_base(object):
                     val = self._hexbcd2float(tval[(i*l):(i*l+l)], dtype.val_decimal_places) # pass  # NOQA
                 ret.update({key: val})
             return ret
-            # val = hexbcd2float([0x34,0x12,0x56,0x78], dtype.val_decimal_places)
+
         key = "%s(%s)" % (dtype.chinese_name, dtype.unit)
+
         ret = {key: val}
         return ret
 
     def _parse_safety_read_response(self, buf):
-        dtype = diType(self._sub33(buf[0:4]))
-        tval = self._sub33(buf[4:])
-        self._debug("the value part:%r" % [hex(x) for x in tval])
         ret = {}
+        if len(buf) == 0:
+            ret.update({"result": u"ok"})
+        else:
+            # dtype = diType(self._sub33(buf[0:4]))
+            tval = self._sub33(buf[4:])
+            self._debug("the value part:%r" % [hex(x) for x in tval])
         return ret
 
     def _parse_write_response(self, buf):
         ret = {}
+        if len(buf) == 0:
+            ret.update({"result": u"ok"})
         return ret
 
     def _write_buf(self, buf):

@@ -49,8 +49,6 @@ class ModbusTCPExample(base.DevObj):
 
     def dev_element(self):
         super(ModbusTCPExample, self).dev_element()
-        self.element.update({"conn":
-                             {base.Commif: self.commif}})
         return self.element
 
     @classmethod

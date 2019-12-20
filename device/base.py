@@ -193,8 +193,12 @@ class DevObj(object):
         return self.syscommif
 
     def dev_element(self):
-        self.element = {DevAddr: self.addr,
-                        DevType: self.__class__.__name__}
+        self.element = {DevType: self.__class__.__name__,
+                        DevConn: {
+                                  DevAddr: self.addr,
+                                  Commif: self.commif
+                                  }
+                        }
 
     def dev_check_key(self, ele):
         return {"error": u"设备驱动程序未定义dev_check_key方法"}

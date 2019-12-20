@@ -66,10 +66,10 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
                 self._get_version]
 
     def DriveSvr(self, request, context):
-        self._info("request.Devid: %s" % request.Devid)
-        self._info("request.Cmd: %s" % self.handlers[request.Cmd].__name__)
-        self._info("request.CmdStr: %s" % request.CmdStr)
-        self._info("request.Data: %s" % request.Data)
+        self._debug("request.Devid: %s" % request.Devid)
+        self._debug("request.Cmd: %s" % self.handlers[request.Cmd].__name__)
+        self._debug("request.CmdStr: %s" % request.CmdStr)
+        self._debug("request.Data: %s" % request.Data)
         try:
             reqs = request.Data if base._PYVER == "2" else\
                 bytes.decode(request.Data)
@@ -121,6 +121,7 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
         self.respstr = json.dumps(retlist)
 
     def _dev_list(self, **kw):
+        self._dev_update()
         retlist = [key for key in self.devlist]
         retlist.sort()
         self.respstr = json.dumps(retlist)
@@ -135,8 +136,9 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
         print("in dev element")
         if kw['devid'] not in self.devlist:
             raise KeyError("device %s not exist" % kw['devid'])
-        self.respstr = json.dumps(
-                self.devlist[kw['devid']].dev_element())
+        ele = self.devlist[kw['devid']].dev_element()
+        ele[base.DevID] = kw['devid']
+        self.respstr = json.dumps(ele)
 
     def _dev_getset(self, **kw):
         if kw['devid'] not in self.devlist:

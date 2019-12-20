@@ -71,9 +71,6 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
 
     def dev_element(self):
         super(SimpleDTL645_07, self).dev_element()
-        self.element.update({"conn":
-                             {base.Commif: self.commif}
-                             })
         return self.element
 
     @classmethod

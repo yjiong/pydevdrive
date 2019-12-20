@@ -196,7 +196,7 @@ class DevObj(object):
         self.element = {DevType: self.__class__.__name__,
                         DevConn: {
                                   DevAddr: self.addr,
-                                  Commif: self.commif
+                                  Commif: self.syscommif
                                   }
                         }
 

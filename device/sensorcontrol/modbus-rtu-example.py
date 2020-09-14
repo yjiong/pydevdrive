@@ -18,8 +18,7 @@ except Exception:
 @base.DynApp.registerdev(base.DynApp, 'ModbusRtuExample')
 class ModbusRtuExample(base.DevObj):
     def __init__(self, element):
-        self.addr = element[base.DevAddr]
-        self.getCommif(element)
+        super(ModbusRtuExample, self).__init__(element)
         self.set_serial_config()
 # -----------------------------user code-----------------------------------
 #         定义自己的属性等
@@ -36,7 +35,7 @@ class ModbusRtuExample(base.DevObj):
         cls.stopbits = 1
         cls.timeout = 1
 
-    @property
+    @classmethod
     def dev_help(self):
         # hs内介绍你的驱动的参数等等,下面是个简单的列子
         hs = '''

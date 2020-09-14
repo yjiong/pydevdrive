@@ -27,11 +27,9 @@ except Exception:
 @base.DynApp.registerdev(base.DynApp, 'SimpleDTL645_07')
 class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
     def __init__(self, element, passwd="", clientcode=""):
-        super(SimpleDTL645_07, self).__init__(element[base.DevAddr],
+        super(SimpleDTL645_07, self).__init__(element,
                                               passwd,
                                               clientcode)
-        self.addr = element[base.DevAddr]
-        self.getCommif(element)
         self.set_serial_config()
         # self.read_di = [(0x0, 0x08, 0xFF, 0x01)]
         # self.read_di = [0x0001ff00]
@@ -59,7 +57,7 @@ class SimpleDTL645_07(base.DevObj, dlt645_07.DLT6452007_base):
         cls.stopbits = 1
         cls.timeout = 1
 
-    @property
+    @classmethod
     def dev_help(self):
         # hs内介绍你的驱动的参数等等
         hs = '''

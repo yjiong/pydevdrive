@@ -18,18 +18,33 @@ import configparser
 import codecs
 import platform
 # from serial.tools import list_ports as spl
-
+IOTD = False
 _VERSION = 'v1.0.0'
-DevID = "_devid"
-DevConn = "_conn"
-DevType = "_type"
-DevAddr = "devaddr"
-DevName = "dname"
-Commif = "commif"
-UpdateDevItem = "manager/dev/update.do"
-SetDevVar = "do/setvar"
-GetDevVar = "do/getvar"
 _PYVER = platform.python_version()[0]
+if IOTD:
+    DevID = "devid"
+    DevConn = "conn"
+    DevType = "type"
+    DevAddr = "devaddr"
+    DevName = "devname"
+    Commif = "commif"
+    ReadInterval = "read_interval"
+    StoreInterval = "store_interval"
+    UpdateDevItem = "update /dev/item"
+    SetDevVar = "set /dev/var"
+    GetDevVar = "get /dev/var"
+else:
+    DevID = "_devid"
+    DevConn = "_conn"
+    DevType = "_type"
+    DevAddr = "devaddr"
+    DevName = "dname"
+    Commif = "commif"
+    ReadInterval = "read_interval"
+    StoreInterval = "store_interval"
+    UpdateDevItem = "manager/dev/update.do"
+    SetDevVar = "do/setvar"
+    GetDevVar = "do/getvar"
 
 
 def objLoger(obj):
@@ -67,6 +82,8 @@ def objLoger(obj):
 @objLoger
 class DynApp(object):
     config = '/etc/default/iotdconf'
+    if os.access('./iotdconf', os.R_OK):
+        config = './iotdconf'
     devtypes = {}
     syscommif = {}
     serstat = {}
@@ -84,6 +101,12 @@ class DynApp(object):
 
     def __init__(self):
         self.devlist_file = '/opt/iot/devlist'
+        if os.access('./devlist', os.R_OK):
+            self.devlist_file = './devlist'
+        elif os.access('/home/fa/iot/devlist', os.R_OK):
+            self.devlist_file = '/home/fa/iot/devlist'
+        elif os.access('/home/fa/iot/devlist.ini', os.R_OK):
+            self.devlist_file = '/home/fa/iot/devlist.ini'
         self.devlist = {}
         self.load_drive()
         self._dev_update()
@@ -134,6 +157,16 @@ class DynApp(object):
 
 @objLoger
 class DevObj(object):
+    def __init__(self, element, *args, **kwargs):
+        self.addr = element[DevAddr]
+        self.getCommif(element)
+        self.read_interval = 0
+        self.store_interval = 300
+        if ReadInterval in element:
+            self.read_interval = int(element[ReadInterval])
+        if StoreInterval in element:
+            self.store_interval = int(element[StoreInterval])
+
     def _getser(self, serialPort):
         import serial
         ser = serial.Serial()
@@ -152,6 +185,9 @@ class DevObj(object):
             print("%s open failed %s" % (serialPort, e))
             return 0
         return ser
+
+    def rw_device(rw, var_value):
+        raise NotImplementedError()
 
     def rw_dev(self, rw='r', var_value=None):
         ser = 0
@@ -194,6 +230,8 @@ class DevObj(object):
 
     def dev_element(self):
         self.element = {DevType: self.__class__.__name__,
+                        ReadInterval: self.read_interval,
+                        StoreInterval: self.store_interval,
                         DevConn: {
                                   DevAddr: self.addr,
                                   Commif: self.syscommif
@@ -203,8 +241,8 @@ class DevObj(object):
     def dev_check_key(self, ele):
         return {"error": u"设备驱动程序未定义dev_check_key方法"}
 
-    def rw_device(self, rw=None, var_value=None):
-        return {"error": u"设备驱动程序未定义rw_device方法"}
+    # def rw_device(self, rw=None, var_value=None):
+        # return {"error": u"设备驱动程序未定义rw_device方法"}
 
     def getCommif(self, ele):
         self.commif = ele[Commif]

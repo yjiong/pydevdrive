@@ -9,7 +9,16 @@
 
 """
 import time
+import os
+import sys
 from dlt645di import *  # pass # NOQA
+
+try:
+    import base
+except Exception:
+    tp = (os.path.split(os.path.realpath(__file__))[0])
+    sys.path.append(os.path.dirname(tp))
+    import base
 
 
 def h2bcd(hexv):
@@ -64,8 +73,8 @@ class diType(object):
 
 
 class DLT6452007_base(object):
-    def __init__(self, address="999999999999", passwd="", clientcode=""):
-        self.address = address
+    def __init__(self, element="999999999999", passwd="", clientcode=""):
+        self.address = element[base.DevAddr]
         self.passwd = passwd
         self.cli_code = clientcode
         self._rece_buf = []

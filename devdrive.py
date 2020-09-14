@@ -106,7 +106,7 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
         if kw['devid'] not in self.devtypes:
             raise KeyError("device type %s not exist" % kw['devid'])
         ustr = self.devtypes[kw['devid']].dev_help()
-        self.response.Data = json.dumps(ustr)
+        self.respstr = json.dumps(ustr)
 
     def _dev_check_key(self, **kw):
         if kw['devid'] not in self.devtypes:
@@ -149,8 +149,10 @@ class DevDriveService(drivesvr_pb2_grpc.DriveServicer,
             rw = kw['rw']
         if kw['vv'] != "":
             vv = kw['vv']
-        self.respstr = json.dumps(
-                self.devlist[kw['devid']].rw_dev(rw, vv))
+        rval = self.devlist[kw['devid']].rw_dev(rw, vv)
+        if "error" in rval:
+            raise RuntimeError(rval["error"])
+        self.respstr = json.dumps(rval)
 
     def _get_version(self, **kw):
         self.respstr = json.dumps(base._VERSION)

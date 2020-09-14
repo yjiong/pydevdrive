@@ -18,8 +18,8 @@ except Exception:
 @base.DynApp.registerdev(base.DynApp, 'ModbusTCPExample')
 class ModbusTCPExample(base.DevObj):
     def __init__(self, element):
-        self.addr = element[base.DevAddr]
-        self.getCommif(element)
+        super(ModbusTCPExample, self).__init__(element)
+        self.set_serial_config()
 # -----------------------------user code-----------------------------------
 #         定义自己的属性等
 #         self.var1 = xxx
@@ -27,8 +27,6 @@ class ModbusTCPExample(base.DevObj):
 #         ......
 # -----------------------------user code-----------------------------------
 
-
-# -----------------------------user code-----------------------------------
     @classmethod
     def dev_help(cls):
         hs = '''

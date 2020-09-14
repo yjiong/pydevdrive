@@ -11,3 +11,5 @@ dev_client.py
 debpackage/opt/*
 *.deb            
 device/ammeter/dds*.py
+devlist
+iotdconf

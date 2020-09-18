@@ -16,7 +16,7 @@ flake8==3.6.0
 gevent==20.6.2
 greenlet==0.4.16
 html5lib==1.0.1
-httplib2==0.11.3
+httplib2==0.18.0
 idna==2.6
 jedi==0.17.2
 keyring==17.1.1

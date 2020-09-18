@@ -26,9 +26,7 @@ except Exception as e:
 @base.DynApp.registerdev(base.DynApp, 'DeviceName')
 class DeviceName(base.DevObj):
     def __init__(self, element):
-        self.addr = element[base.DevAddr]
-        self.getCommif(element)
-
+        super(ModbusRtuExample, self).__init__(element)
 # -----------------------------user code-----------------------------------
         # 如果是串口类接口,初始化串口
         self.set_serial_config()

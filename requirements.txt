@@ -56,7 +56,7 @@ python-debian==0.1.35
 python-debianbts==2.8.2
 python-markdown-math==0.6
 pyxdg==0.25
-PyYAML==3.13
+PyYAML==5.4
 reportbug===7.5.3-deb10u1
 reportlab==3.5.13
 requests==2.21.0
